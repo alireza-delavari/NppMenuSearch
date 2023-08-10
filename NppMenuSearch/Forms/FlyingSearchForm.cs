@@ -20,11 +20,24 @@ namespace NppMenuSearch.Forms
             if (components == null)
                 components = new Container();
             components.Add(ResultsPopup);
+
+
+            DarkMode.Changed += DarkMode_Changed;
+            DarkMode_Changed();
+        }
+
+        private void DarkMode_Changed()
+        {
+            DarkMode.ApplyThemeRecursive(this);
         }
 
         private void FlyingSearchForm_VisibleChanged(object sender, EventArgs e)
         {
-            if (!Visible)
+            if (Visible)
+            {
+                Text = Main.GetMenuSearchTitle();
+            }
+            else
             {
                 txtSearch.Text = "";
                 ResultsPopup.Hide();
@@ -106,6 +119,26 @@ namespace NppMenuSearch.Forms
                 case Keys.Tab:
                     e.Handled = true;
                     suppressKeyPress = true;
+                    break;
+
+                case Keys.Back:
+                    if (e.Control)
+                    {
+                        // Ctrl+BackSpace
+                        suppressKeyPress = true; // Ctrl+BackSpace triggers a KeyPress with e.KeyChar == '\x7F'
+                        int pos = txtSearch.SelectionStart;
+                        if (txtSearch.SelectionLength == 0)
+                        {
+                            int len = txtSearch.Text.Length;
+                            txtSearch.Text = txtSearch.Text.RemovePreviousWord(pos);
+                            pos -= (len - txtSearch.Text.Length);
+                        }
+                        else
+                        {
+                            txtSearch.Text = txtSearch.Text.Substring(0, pos) + txtSearch.Text.Substring(pos + txtSearch.SelectionLength);
+                        }
+                        txtSearch.Select(pos, 0);
+                    }
                     break;
             }
         }

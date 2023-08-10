@@ -36,7 +36,8 @@
             this.viewResults = new System.Windows.Forms.ListView();
             this.popupMenu = new System.Windows.Forms.ContextMenu();
             this.menuGotoShortcutDefinition = new System.Windows.Forms.MenuItem();
-            this.menuExecuteMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuExecute = new System.Windows.Forms.MenuItem();
+            this.menuSelectTab = new System.Windows.Forms.MenuItem();
             this.menuOpenDialog = new System.Windows.Forms.MenuItem();
             this.panInfo.SuspendLayout();
             this.SuspendLayout();
@@ -62,10 +63,10 @@
             this.lblHelp.Location = new System.Drawing.Point(0, 2);
             this.lblHelp.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblHelp.Name = "lblHelp";
-            this.lblHelp.Size = new System.Drawing.Size(654, 16);
+            this.lblHelp.Size = new System.Drawing.Size(574, 14);
             this.lblHelp.TabIndex = 0;
             this.lblHelp.Text = "Press CTRL+M again to show all results. TAB to switch groups: Recently Used ↔ Men" +
-    "u ↔ Preferences";
+    "u ↔ Open Files ↔ Preferences";
             // 
             // viewResults
             // 
@@ -79,6 +80,7 @@
             this.viewResults.MultiSelect = false;
             this.viewResults.Name = "viewResults";
             this.viewResults.OwnerDraw = true;
+            this.viewResults.ShowItemToolTips = true;
             this.viewResults.Size = new System.Drawing.Size(592, 453);
             this.viewResults.TabIndex = 1;
             this.viewResults.TileSize = new System.Drawing.Size(317, 16);
@@ -92,7 +94,8 @@
             // 
             this.popupMenu.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.menuGotoShortcutDefinition,
-            this.menuExecuteMenuItem,
+            this.menuExecute,
+            this.menuSelectTab,
             this.menuOpenDialog});
             this.popupMenu.Popup += new System.EventHandler(this.popupMenu_Popup);
             // 
@@ -102,19 +105,26 @@
             this.menuGotoShortcutDefinition.Text = "Change &Shortcut";
             this.menuGotoShortcutDefinition.Click += new System.EventHandler(this.menuGotoShortcutDefinition_Click);
             // 
-            // menuExecuteMenuItem
+            // menuExecute
             // 
-            this.menuExecuteMenuItem.DefaultItem = true;
-            this.menuExecuteMenuItem.Index = 1;
-            this.menuExecuteMenuItem.Text = "E&xecute";
-            this.menuExecuteMenuItem.Click += new System.EventHandler(this.menuExecuteMenuItem_Click);
+            this.menuExecute.DefaultItem = true;
+            this.menuExecute.Index = 1;
+            this.menuExecute.Text = "E&xecute";
+            this.menuExecute.Click += new System.EventHandler(this.menuExecute_Click);
+            // 
+            // menuSelectTab
+            // 
+            this.menuSelectTab.DefaultItem = true;
+            this.menuSelectTab.Index = 2;
+            this.menuSelectTab.Text = "&Select Tab";
+            this.menuSelectTab.Click += new System.EventHandler(this.menuExecute_Click);
             // 
             // menuOpenDialog
             // 
             this.menuOpenDialog.DefaultItem = true;
-            this.menuOpenDialog.Index = 2;
+            this.menuOpenDialog.Index = 3;
             this.menuOpenDialog.Text = "&Open Dialog";
-            this.menuOpenDialog.Click += new System.EventHandler(this.menuOpenDialog_Click);
+            this.menuOpenDialog.Click += new System.EventHandler(this.menuExecute_Click);
             // 
             // ResultsPopup
             // 
@@ -148,7 +158,8 @@
 		internal System.Windows.Forms.Timer timerIdle;
 		private System.Windows.Forms.ContextMenu popupMenu;
 		private System.Windows.Forms.MenuItem menuGotoShortcutDefinition;
-		private System.Windows.Forms.MenuItem menuExecuteMenuItem;
+		private System.Windows.Forms.MenuItem menuExecute;
 		private System.Windows.Forms.MenuItem menuOpenDialog;
-	}
+        private System.Windows.Forms.MenuItem menuSelectTab;
+    }
 }

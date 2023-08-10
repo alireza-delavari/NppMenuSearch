@@ -28,6 +28,7 @@ namespace NppMenuSearch
         internal static ToolbarSearchForm ToolbarSearchForm { get; private set; }
         private static FlyingSearchForm FlyingSearchForm { get; set; }
 
+
         internal static void CommandMenuInit()
         {
 #if DEBUG
@@ -42,11 +43,11 @@ namespace NppMenuSearch
             xmlFilePath = Path.Combine(xmlFilePath, PluginName + ".xml");
             Settings.Load(xmlFilePath);
 
-            PluginBase.SetCommand(0, "Menu Search...", MenuSearchFunction, new ShortcutKey(true, false, false, Keys.M));
+            PluginBase.SetCommand(0, "Menu Search...", MenuSearchFunction, new ShortcutKey(true, false, false, Keys.F1));
             PluginBase.SetCommand(1, "Clear “Recently Used” List", ClearRecentlyUsedList, new ShortcutKey(false, false, false, Keys.None));
             PluginBase.SetCommand(2, RepeatPreviousCommandLabel, RepeatLastCommandFunction, new ShortcutKey(false, false, false, Keys.None));
             PluginBase.SetCommand(3, "---", null);
-            PluginBase.SetCommand(4, "About...", AboutFunction, new ShortcutKey(false, false, false, Keys.None));
+            PluginBase.SetCommand(4, "About", AboutFunction, new ShortcutKey(false, false, false, Keys.None));
         }
 
         internal static string GetNativeLangXml()
@@ -126,6 +127,15 @@ namespace NppMenuSearch
             return text.After("\t");
         }
 
+        internal static string GetMenuSearchTitle()
+        {
+            string title = "Search Notepad++";
+            string shortcut = GetMenuSearchShortcut();
+            if (shortcut != "")
+                title = $"{title} ({shortcut})";
+            return title;
+        }
+
         internal static IntPtr FindRepeatLastCommandMenuItem(out uint cmdId, out uint index)
         {
             cmdId = (uint)PluginBase._funcItems.Items[2]._cmdID;
@@ -196,6 +206,8 @@ namespace NppMenuSearch
 
         internal static void PluginReady()
         {
+            DarkMode.OnChanged();
+
             NppListener = new NppListener();
 
             ToolbarSearchForm = new ToolbarSearchForm();

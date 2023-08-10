@@ -38,6 +38,16 @@ namespace NppMenuSearch.Forms
             //uint rightMargin = margins >> 16;
             //rightMargin+= 16;
             //Win32.SendMessage(txtSearch.Handle, (NppMsg)Win32.EM_SETMARGINS, Win32.EC_RIGHTMARGIN, (int)(rightMargin << 16));
+
+            DarkMode.Changed += DarkMode_Changed;
+            DarkMode_Changed();
+
+            txtSearch.HandleCreated += (sender, e) => DarkMode.ApplyTheme((Control)sender);
+        }
+
+        private void DarkMode_Changed()
+        {
+            DarkMode.ApplyThemeRecursive(this);
         }
 
         void NppListener_AfterHideShowToolbar(bool show)
@@ -217,7 +227,7 @@ namespace NppMenuSearch.Forms
                 band.fStyle = Win32.RBBS_GRIPPERALWAYS;
                 band.hwndChild = Handle;
                 band.cx = Size.Width;
-                band.cxMinChild = 120;
+                band.cxMinChild = 170;
                 band.cxIdeal = 0;
                 band.cyMinChild = frmSearch.Height;
                 band.cyMaxChild = frmSearch.Height;
@@ -234,16 +244,16 @@ namespace NppMenuSearch.Forms
 
                 if (searchBarIndex > 0 && show)
                 {
+                    if (oldPreferredWidth < band.cxMinChild)
+                        oldPreferredWidth = band.cxMinChild;
+
                     Win32.SendMessage(hwndRebar, Win32.RB_SETBANDWIDTH, searchBarIndex, oldPreferredWidth);
                     int extraMargin = Width - oldPreferredWidth;
                     if(extraMargin > 0 && extraMargin < oldPreferredWidth)
                         Win32.SendMessage(hwndRebar, Win32.RB_SETBANDWIDTH, searchBarIndex, oldPreferredWidth - extraMargin);
                 }
 
-                string cuebanner = "Search Menu & Preferences";
-                string shortcut = Main.GetMenuSearchShortcut();
-                if (shortcut != "")
-                    cuebanner = string.Format("{0} ({1})", cuebanner, shortcut);
+                string cuebanner = Main.GetMenuSearchTitle();
                 Win32.SendMessage(txtSearch.Handle, (NppMsg)Win32.EM_SETCUEBANNER, 0, cuebanner);
             }
             finally
@@ -296,7 +306,7 @@ namespace NppMenuSearch.Forms
                 ResultsPopup.Activated += activated;
                 ResultsPopup.Show();
 
-                SetClearImage(Properties.Resources.ClearNormal);
+                SetClearImage(DarkMode.ClearNormalIcon);
             }
         }
 
@@ -321,6 +331,26 @@ namespace NppMenuSearch.Forms
                     e.Handled = true;
                     suppressKeyPress = true;
                     break;
+
+                case Keys.Back:
+                    if (e.Control)
+                    {
+                        // Ctrl+BackSpace
+                        suppressKeyPress = true; // Ctrl+BackSpace triggers a KeyPress with e.KeyChar == '\x7F'
+                        int pos = txtSearch.SelectionStart;
+                        if (txtSearch.SelectionLength == 0)
+                        {
+                            int len = txtSearch.Text.Length;
+                            txtSearch.Text = txtSearch.Text.RemovePreviousWord(pos);
+                            pos -= (len - txtSearch.Text.Length);
+                        }
+                        else
+                        {
+                            txtSearch.Text = txtSearch.Text.Substring(0, pos) + txtSearch.Text.Substring(pos + txtSearch.SelectionLength);
+                        }
+                        txtSearch.Select(pos, 0);
+                    }
+                    break;
             }
         }
 
@@ -339,7 +369,7 @@ namespace NppMenuSearch.Forms
             {
                 if (txtSearch.TextLength > 0)
                 {
-                    picClear.Image = Properties.Resources.ClearPressed;
+                    picClear.Image = DarkMode.ClearPressedIcon;
                 }
             }
         }
@@ -350,7 +380,7 @@ namespace NppMenuSearch.Forms
             {
                 if (txtSearch.TextLength > 0)
                 {
-                    picClear.Image = Properties.Resources.ClearNormal;
+                    picClear.Image = DarkMode.ClearNormalIcon;
                 }
             }
         }
